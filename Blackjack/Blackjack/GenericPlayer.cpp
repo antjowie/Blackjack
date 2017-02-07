@@ -10,12 +10,5 @@ GenericPlayer::GenericPlayer(const std::string& name) :
 
 bool GenericPlayer::CheckBust() const
 {
-	/*if (GetTotal() > 21)
-	{
-		return true;
-	}
-	return false;
-	*/
-
 	return (GetTotal() > 21);
 }
