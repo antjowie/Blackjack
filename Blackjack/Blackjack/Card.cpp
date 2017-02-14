@@ -19,11 +19,28 @@ void Card::Flip()
 	m_isFaceUp = !m_isFaceUp;
 }
 
-Card::Card(const int pRANK, const int pSUIT, const bool pIsFaceUp) :
+void Card::Draw(sf::RenderWindow & window)
+{
+	if (m_isFaceUp)
+	{
+		sf::IntRect backup = m_cardTexture.getTextureRect();
+		m_cardTexture.setTextureRect(sf::IntRect(117 * 4, 0, 82, 118));
+		window.draw(m_cardTexture);
+		m_cardTexture.setTextureRect(backup);
+	}
+	else
+	{
+		window.draw(m_cardTexture);
+	}
+}
+
+Card::Card(const sf::Texture& texture, const int pRANK, const int pSUIT, const bool pIsFaceUp) :
 	m_rank(static_cast<RANK>(pRANK)),
 	m_suit(static_cast<SUIT>(pSUIT)),
-	m_isFaceUp(pIsFaceUp)
+	m_isFaceUp(pIsFaceUp),
+	m_cardTexture(texture)
 {
+	m_cardTexture.setTextureRect(sf::IntRect(117 * m_suit, 81 * (m_rank - 1), 82, 118));
 }
 
 std::ostream & operator<<(std::ostream & os, const Card & card)

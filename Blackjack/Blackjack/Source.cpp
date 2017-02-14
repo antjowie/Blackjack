@@ -4,6 +4,13 @@
 
 int main()
 {
+	std::vector<std::string> namez;
+	GameManager gamez(namez);
+	gamez.Play2();
+
+
+	return 0;
+
 	std::cout << "Welcome to the BlackJack game.\n";
 
 	int numberOfPlayers;

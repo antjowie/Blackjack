@@ -13,13 +13,21 @@ void Hand::Add(Card* const card)
 
 void Hand::Clear()
 {
-	if (Debug) std::cout << "\n_DEBUG_ Clearing hand object _DEBUG_\n";
+	if (DebugMode) std::cout << "\n_DEBUG_ Clearing hand object _DEBUG_\n";
 	for (std::vector<Card*>::iterator iter = m_hand.begin(); iter != m_hand.end(); ++iter)
 	{
 		delete *iter;
 		*iter = 0;
 	}
 	m_hand.clear();
+}
+
+void Hand::DrawAll(sf::RenderWindow & window)
+{
+	for (auto iter : m_hand)
+	{
+		iter->Draw(window);
+	}
 }
 
 int Hand::GetTotal() const
@@ -48,7 +56,7 @@ Hand::Hand()
 
 Hand::~Hand()
 {
-	if (Debug) std::cout << "\n_DEBUG_ Deleting hand object _DEBUG_\n";
+	if (DebugMode) std::cout << "\n_DEBUG_ Deleting hand object _DEBUG_\n";
 	Clear();
 }
 

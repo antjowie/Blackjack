@@ -1,5 +1,5 @@
 #pragma once
 
-#define Debug false
+#define DebugMode false
 #define ShowTotal true
 #define ShowInstructions true

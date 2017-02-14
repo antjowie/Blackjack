@@ -101,6 +101,40 @@ void GameManager::PrintPlayers()
 		std::cout << "Dealer\t|" << m_dealer << '\n';
 }
 
+void GameManager::Play2()
+{
+	sf::RenderWindow window(sf::VideoMode(1280, 720), "Blackjack");
+	window.setVerticalSyncEnabled(true);
+	sf::Event event;
+
+	std::vector<std::string> namez;
+	GameManager manager(namez);
+	Deck deck;
+	deck.Fill();
+	Hand hand;
+	hand.Add(deck.Draw());
+
+	while (window.isOpen())
+	{
+
+		while (window.pollEvent(event))
+		{
+			switch (event.type)
+			{
+			case sf::Event::Closed:
+				window.close();
+				break;
+			}
+		}
+
+		window.clear(sf::Color::Black);
+		hand.DrawAll(window);
+		window.display();
+	}
+
+}
+
+
 GameManager::GameManager(const std::vector<std::string>& names)
 {
 	for (auto iter : names)
@@ -108,6 +142,8 @@ GameManager::GameManager(const std::vector<std::string>& names)
 		m_players.push_back(new Player(iter));
 	}
 	srand(static_cast<unsigned int>(time(NULL)));
+
+	TextureManager::LoadTexture("Playing Cards", "Textures/playingCards2.png");
 }
 
 
