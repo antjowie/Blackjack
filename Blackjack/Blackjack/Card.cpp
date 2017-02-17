@@ -21,10 +21,10 @@ void Card::Flip()
 
 void Card::Draw(sf::RenderWindow & window)
 {
-	if (m_isFaceUp)
+	if (!m_isFaceUp)
 	{
 		sf::IntRect backup = m_cardTexture.getTextureRect();
-		m_cardTexture.setTextureRect(sf::IntRect(117 * 4, 0, 82, 118));
+		m_cardTexture.setTextureRect(sf::IntRect(0, 117 * 4, 82, 118));
 		window.draw(m_cardTexture);
 		m_cardTexture.setTextureRect(backup);
 	}
@@ -40,7 +40,7 @@ Card::Card(const sf::Texture& texture, const int pRANK, const int pSUIT, const b
 	m_isFaceUp(pIsFaceUp),
 	m_cardTexture(texture)
 {
-	m_cardTexture.setTextureRect(sf::IntRect(117 * m_suit, 81 * (m_rank - 1), 82, 118));
+	m_cardTexture.setTextureRect(sf::IntRect(81 * (m_rank - 1), 117 * m_suit, 82, 118));
 }
 
 std::ostream & operator<<(std::ostream & os, const Card & card)
