@@ -9,7 +9,6 @@ public:
 
 	void Add(Card* const card);
 	void Clear();
-	void DrawAll(sf::RenderWindow& window);
 
 	int GetTotal() const;
 

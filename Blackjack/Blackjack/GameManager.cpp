@@ -6,6 +6,9 @@
 
 bool GameManager::Play()
 {
+	sf::RenderWindow window(sf::VideoMode(720, 1280), "Blackjack output window");
+	window.setVerticalSyncEnabled(true);
+
 	m_deck.Fill();
 	m_deck.Shuffle();
 	
@@ -101,39 +104,42 @@ void GameManager::PrintPlayers()
 		std::cout << "Dealer\t|" << m_dealer << '\n';
 }
 
-void GameManager::Play2()
+bool GameManager::Play2()
 {
-	sf::RenderWindow window(sf::VideoMode(1280, 720), "Blackjack");
+	sf::RenderWindow window(sf::VideoMode(1024,768), "Blackjack output window");
 	window.setVerticalSyncEnabled(true);
+
+	m_deck.Fill();
+	m_dealer.Add(m_deck.Draw());
+	m_dealer.Add(m_deck.Draw());
+	m_dealer.Add(m_deck.Draw());
+
 	sf::Event event;
-
-	std::vector<std::string> namez;
-	GameManager manager(namez);
-	Deck deck;
-	deck.Fill();
-	Hand hand;
-	hand.Add(deck.Draw());
-
 	while (window.isOpen())
 	{
-
 		while (window.pollEvent(event))
 		{
-			switch (event.type)
-			{
-			case sf::Event::Closed:
+			if ((event.type == event.Closed))
 				window.close();
-				break;
-			}
 		}
-
 		window.clear(sf::Color::Black);
-		hand.DrawAll(window);
+		PrintHandsToWindow(window);
 		window.display();
 	}
 
+	
+	return false;
 }
 
+void GameManager::PrintHandsToWindow(sf::RenderWindow & window)
+{
+	float handNumber = 0;
+	for (std::vector<Player*>::const_iterator iter = m_players.begin(); iter != m_players.end(); ++iter, ++handNumber)
+	{
+		(*iter)->DrawToWindow(window, handNumber);
+	}
+	m_dealer.DrawToWindow(window,9);
+}
 
 GameManager::GameManager(const std::vector<std::string>& names)
 {

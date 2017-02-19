@@ -12,7 +12,9 @@ public:
 	void Instructions();
 	void PrintPlayers();
 
-	void Play2();
+	bool Play2();
+
+	void PrintHandsToWindow(sf::RenderWindow& window);
 
 	GameManager(const std::vector<std::string>& names);
 	~GameManager();

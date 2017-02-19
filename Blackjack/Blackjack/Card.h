@@ -9,7 +9,7 @@ public:
 	int GetRank() const;
 	void Flip();
 
-	void Draw(sf::RenderWindow& window);
+	void Draw(sf::RenderWindow& window, const float& handNumber, const float& offset);
 
 	Card(const sf::Texture& texture, const int RANK = 0, const int SUIT = 0, const bool isFaceUp = true);
 

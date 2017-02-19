@@ -1,4 +1,4 @@
-#include "Player.h"
+ #include "Player.h"
 #include <iostream>
 #include <string>
 
@@ -15,7 +15,13 @@ std::string & Player::GetName()
 	return m_name;
 }
 
+std::vector<Card*>& Player::GetCards()
+{
+	return m_hand;
+}
+
 Player::Player(const std::string & name) :
 	GenericPlayer(name)
 {
 }
+

@@ -22,14 +22,6 @@ void Hand::Clear()
 	m_hand.clear();
 }
 
-void Hand::DrawAll(sf::RenderWindow & window)
-{
-	for (auto iter : m_hand)
-	{
-		iter->Draw(window);
-	}
-}
-
 int Hand::GetTotal() const
 {
 	int total = 0;
