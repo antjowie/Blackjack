@@ -110,9 +110,19 @@ bool GameManager::Play2()
 	window.setVerticalSyncEnabled(true);
 
 	m_deck.Fill();
+	m_deck.Shuffle();
 	m_dealer.Add(m_deck.Draw());
 	m_dealer.Add(m_deck.Draw());
 	m_dealer.Add(m_deck.Draw());
+	
+	for (auto iter : m_players)
+	{
+		for(int i = 0; i < 5; ++i)
+		iter->Add(m_deck.Draw());
+	}
+
+
+	m_dealer.FlipFirstCard();
 
 	sf::Event event;
 	while (window.isOpen())
@@ -123,7 +133,7 @@ bool GameManager::Play2()
 				window.close();
 		}
 		window.clear(sf::Color::Black);
-		PrintHandsToWindow(window);
+		PrintHandsToWindow(window,2);
 		window.display();
 	}
 
@@ -131,14 +141,37 @@ bool GameManager::Play2()
 	return false;
 }
 
-void GameManager::PrintHandsToWindow(sf::RenderWindow & window)
+void GameManager::PrintHandsToWindow(sf::RenderWindow & window, const int& playingHand)
 {
+	
 	float handNumber = 0;
+	sf::Text name("N/A", TextureManager::GetFont("Name Font"));
 	for (std::vector<Player*>::const_iterator iter = m_players.begin(); iter != m_players.end(); ++iter, ++handNumber)
 	{
+
+		name.setPosition(sf::Vector2f(100.f * handNumber, 0));
+		name.setScale(sf::Vector2f(1, 1));
+		if(handNumber == playingHand)
+		{
+			name.setFillColor(sf::Color::Red);
+		}
+		else
+		{
+			name.setFillColor(sf::Color::White);
+		}
+		std::string firstName = (*iter)->GetName();
+		if (firstName.find(" ") != std::string::npos)
+		{
+		firstName.erase(firstName.find(" "), firstName.size());
+		}
+		name.setString(firstName);
+		name.scale(sf::Vector2f(82.f/name.getLocalBounds().width, 1));
+	
+		window.draw(name);
+
 		(*iter)->DrawToWindow(window, handNumber);
 	}
-	m_dealer.DrawToWindow(window,9);
+	m_dealer.DrawToWindow(window,9.4f);	
 }
 
 GameManager::GameManager(const std::vector<std::string>& names)
@@ -150,6 +183,7 @@ GameManager::GameManager(const std::vector<std::string>& names)
 	srand(static_cast<unsigned int>(time(NULL)));
 
 	TextureManager::LoadTexture("Playing Cards", "Textures/playingCards2.png");
+	TextureManager::LoadFont("Name Font", "Textures/Roboto.ttf");
 }
 
 

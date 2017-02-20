@@ -5,6 +5,14 @@
 int main()
 {
 	std::vector<std::string> namez;
+
+	for (int i = 0; i < 9; ++i)
+	{
+		std::string name = "Name";
+		name += std::to_string(i);
+		namez.push_back(name);
+	}
+
 	GameManager gamez(namez);
 	gamez.Play2();
 
@@ -25,7 +33,7 @@ int main()
 	std::string name;
 	for (int i = 1; i < numberOfPlayers + 1; ++i)
 	{
-		std::cout << "Please enter the name of player " << i << " : ";
+		std::cout << "Please enter the (full) name of player " << i << " : ";
 		std::getline(std::cin, name);
 		//std::cin >> name;
 		names.push_back(name);

@@ -21,7 +21,7 @@ void Card::Flip()
 
 void Card::Draw(sf::RenderWindow & window, const float& handNumber, const float& offset)
 {
-	m_cardTexture.setPosition(sf::Vector2f(0, 0));
+	m_cardTexture.setPosition(sf::Vector2f(0, 45));
 	m_cardTexture.move(sf::Vector2f(handNumber, offset));
 	if (!m_isFaceUp)
 	{

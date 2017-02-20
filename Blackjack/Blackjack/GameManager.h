@@ -14,7 +14,7 @@ public:
 
 	bool Play2();
 
-	void PrintHandsToWindow(sf::RenderWindow& window);
+	void PrintHandsToWindow(sf::RenderWindow& window, const int& playingHand = 10);
 
 	GameManager(const std::vector<std::string>& names);
 	~GameManager();
