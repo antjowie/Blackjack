@@ -41,6 +41,15 @@ int Hand::GetTotal() const
 	return total;
 }
 
+void Hand::DrawToWindow(sf::RenderWindow & window, const float & handNumber)
+{
+	float offset = 0;
+	for (std::vector<Card*>::const_iterator iter = m_hand.begin(); iter != m_hand.end(); ++iter, ++offset)
+	{
+		(*iter)->Draw(window, handNumber * 90, offset * 55);
+	}
+}
+
 Hand::Hand()
 {
 	m_hand.reserve(4);

@@ -5,7 +5,7 @@ class Player :
 	public GenericPlayer
 {
 public:
-	virtual bool IsHitting() const;
+	virtual bool IsHitting(sf::RenderWindow& window);
 	std::string& GetName();
 	std::vector<Card*>& GetCards();
 

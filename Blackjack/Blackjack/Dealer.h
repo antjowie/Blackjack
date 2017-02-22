@@ -5,7 +5,7 @@ class Dealer :
 	public GenericPlayer
 {
 public:
-	virtual bool IsHitting() const;
+	virtual bool IsHitting(sf::RenderWindow& window);
 	void FlipFirstCard();
 	
 	Dealer();

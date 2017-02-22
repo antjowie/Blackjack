@@ -44,6 +44,13 @@ Card * Deck::Draw()
 	return returner;
 }
 
+void Deck::DrawToWindow(sf::RenderWindow & window, const float & handNumber)
+{
+	m_hand.front()->Flip();
+	m_hand.front()->Draw(window, handNumber * 90,0);
+	m_hand.front()->Flip();
+}
+
 int Deck::GetTotalCards() const
 {
 	return m_hand.size();

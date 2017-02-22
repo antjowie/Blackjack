@@ -11,6 +11,8 @@ public:
 	void Clear();
 
 	int GetTotal() const;
+	virtual void DrawToWindow(sf::RenderWindow& window, const float& handNumber);
+
 
 	Hand();
 	~Hand();

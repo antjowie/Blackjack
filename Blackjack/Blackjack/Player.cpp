@@ -2,12 +2,15 @@
 #include <iostream>
 #include <string>
 
-bool Player::IsHitting() const
+bool Player::IsHitting(sf::RenderWindow& window)
 {
+	/*
 	std::cout << "Does " << m_name << " want to hit? (Y/N) ";
 	char input;
 	std::cin >> input;
 	return ((input == 'y') || (input == 'Y'));
+	*/
+	return AskForHit(window);
 }
 
 std::string & Player::GetName()

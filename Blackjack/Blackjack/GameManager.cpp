@@ -24,7 +24,7 @@ bool GameManager::Play()
 		PrintPlayers();
 		turns->Add(m_deck.Draw());
 		std::cout << '\n' << turns->GetName() << "\t|" << *turns << '\n';
-		while ((!turns->CheckBust()) && (turns->IsHitting()))
+		while ((!turns->CheckBust()) && (turns->IsHitting(window)))
 		{
 			turns->Add(m_deck.Draw());
 			std::cout << '\n' << turns->GetName() << "\t|" << *turns << '\n';	
@@ -129,15 +129,14 @@ bool GameManager::Play2()
 	{
 		while (window.pollEvent(event))
 		{
-			if ((event.type == event.Closed))
-				window.close();
+			if ((event.type == event.Closed)) 
+			window.close();
 		}
 		window.clear(sf::Color::Black);
-		PrintHandsToWindow(window,2);
+		PrintHandsToWindow(window,1);
+		m_players.at(0)->IsHitting(window);
 		window.display();
 	}
-
-	
 	return false;
 }
 
@@ -145,11 +144,11 @@ void GameManager::PrintHandsToWindow(sf::RenderWindow & window, const int& playi
 {
 	
 	float handNumber = 0;
-	sf::Text name("N/A", TextureManager::GetFont("Name Font"));
+	sf::Text name("N/A", TextureManager::GetFont("Roboto"));
 	for (std::vector<Player*>::const_iterator iter = m_players.begin(); iter != m_players.end(); ++iter, ++handNumber)
 	{
 
-		name.setPosition(sf::Vector2f(100.f * handNumber, 0));
+		name.setPosition(sf::Vector2f(90.f * handNumber, 0));
 		name.setScale(sf::Vector2f(1, 1));
 		if(handNumber == playingHand)
 		{
@@ -162,7 +161,7 @@ void GameManager::PrintHandsToWindow(sf::RenderWindow & window, const int& playi
 		std::string firstName = (*iter)->GetName();
 		if (firstName.find(" ") != std::string::npos)
 		{
-		firstName.erase(firstName.find(" "), firstName.size());
+			firstName.erase(firstName.find(" "), firstName.size());
 		}
 		name.setString(firstName);
 		name.scale(sf::Vector2f(82.f/name.getLocalBounds().width, 1));
@@ -171,21 +170,31 @@ void GameManager::PrintHandsToWindow(sf::RenderWindow & window, const int& playi
 
 		(*iter)->DrawToWindow(window, handNumber);
 	}
-	m_dealer.DrawToWindow(window,9.4f);	
+	name.setFillColor(sf::Color::Cyan);
+	name.setScale(0.95f, 0.95f);
+	
+	name.setPosition(sf::Vector2f(90.f * 9.4f, 0));
+	name.setString("Dealer");
+	
+	window.draw(name);
+	m_dealer.DrawToWindow(window,9.4f);
+
+	name.setPosition(sf::Vector2f(90.f* 10.5f, 0));
+	name.setString("Deck");
+	
+	window.draw(name);
+	m_deck.DrawToWindow(window, 10.4f);
 }
 
 GameManager::GameManager(const std::vector<std::string>& names)
 {
+	srand(static_cast<unsigned int>(time(NULL)));
+
 	for (auto iter : names)
 	{
 		m_players.push_back(new Player(iter));
 	}
-	srand(static_cast<unsigned int>(time(NULL)));
-
-	TextureManager::LoadTexture("Playing Cards", "Textures/playingCards2.png");
-	TextureManager::LoadFont("Name Font", "Textures/Roboto.ttf");
 }
-
 
 GameManager::~GameManager()
 {
