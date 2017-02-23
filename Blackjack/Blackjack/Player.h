@@ -6,6 +6,8 @@ class Player :
 {
 public:
 	virtual bool IsHitting(sf::RenderWindow& window);
+	void PrintButtons(sf::RenderWindow& window);
+
 	std::string& GetName();
 	std::vector<Card*>& GetCards();
 

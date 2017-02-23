@@ -46,9 +46,12 @@ Card * Deck::Draw()
 
 void Deck::DrawToWindow(sf::RenderWindow & window, const float & handNumber)
 {
+	if (!m_hand.empty())
+	{
 	m_hand.front()->Flip();
 	m_hand.front()->Draw(window, handNumber * 90,0);
 	m_hand.front()->Flip();
+	}
 }
 
 int Deck::GetTotalCards() const

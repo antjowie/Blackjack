@@ -7,9 +7,10 @@ int main()
 	TextureManager::LoadTexture("Playing Cards", "Textures/playingCards2.png");
 	TextureManager::LoadFont("Roboto", "Textures/Roboto.ttf");
 
+	
 	std::vector<std::string> namez;
 
-	for (int i = 0; i < 9; ++i)
+	for (int i = 0; i < 3; ++i)
 	{
 		std::string name = "Name";
 		name += std::to_string(i);
@@ -21,6 +22,7 @@ int main()
 
 
 	return 0;
+	
 
 	std::cout << "Welcome to the BlackJack game.\n";
 

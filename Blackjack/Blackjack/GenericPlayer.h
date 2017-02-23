@@ -11,14 +11,10 @@ public:
 	
 	GenericPlayer(const std::string& name);
 
-protected:
-	bool AskForHit(sf::RenderWindow& window);
-	std::string m_name;
-
 private:
-	bool HandleClick(const sf::Vector2f& coordinates) const;
-
 	enum class eMenuAction { HIT, QUIT, NOTHING };
+
+	eMenuAction HandleClick(const sf::Vector2i& coordinates) const;
 
 	
 	struct MenuItem 
@@ -28,5 +24,9 @@ private:
 		eMenuAction m_action;
 	};
 
+protected:
+	bool AskForHit(sf::RenderWindow& window);
+	std::string m_name;
 	std::vector<MenuItem> m_buttons;
+
 };

@@ -10,15 +10,15 @@ GenericPlayer::GenericPlayer(const std::string& name) :
 	
 	MenuItem hit,quit;
 	hit.m_action = eMenuAction::HIT;
-	hit.m_area = sf::IntRect(910-60,530-20, 180, 80);
+	hit.m_area = sf::IntRect(900-60,530-20, 195, 80);
 	hit.m_text.setFont(TextureManager::GetFont("Roboto"));
-	hit.m_text.setPosition(sf::Vector2f(920, 530));
+	hit.m_text.setPosition(sf::Vector2f(910, 530));
 	hit.m_text.setString("Hit");
 
 	quit.m_action = eMenuAction::QUIT;
-	quit.m_area = sf::IntRect(910-60, 650-20, 180, 80);
+	quit.m_area = sf::IntRect(900-60, 650-20, 195, 80);
 	quit.m_text.setFont(TextureManager::GetFont("Roboto"));
-	quit.m_text.setPosition(sf::Vector2f(912, 650));
+	quit.m_text.setPosition(sf::Vector2f(906, 650));
 	quit.m_text.setString("Quit"); 
 
 	m_buttons.push_back(hit);
@@ -27,20 +27,53 @@ GenericPlayer::GenericPlayer(const std::string& name) :
 
 bool GenericPlayer::AskForHit(sf::RenderWindow & window)
 {
-	sf::RectangleShape rect(sf::Vector2f(180,80));
-	rect.setFillColor(sf::Color::Color(255,255,255,100));
-	for (auto button : m_buttons)
+	sf::Event event;
+
+	while (true)
 	{
-		window.draw(button.m_text);
-		rect.setPosition(button.m_area.left, button.m_area.top);
-		window.draw(rect);
+		while (window.pollEvent(event))
+		{
+			switch (event.type)
+			{
+				break;
+			case sf::Event::KeyPressed:
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
+					return true;
+				else if (sf::Keyboard::isKeyPressed(sf::Keyboard::RShift))
+					return false;
+				break;
+			case sf::Event::Closed:
+				window.close();
+				return false;
+				break;
+			}
+			if (event.type == sf::Event::MouseButtonPressed)
+			{
+				eMenuAction result = HandleClick(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
+				switch (result)
+				{
+				case GenericPlayer::eMenuAction::HIT:
+					return true;
+					break;
+				case GenericPlayer::eMenuAction::QUIT:
+					return false;
+					break;
+				case GenericPlayer::eMenuAction::NOTHING:
+					break;
+				}
+			}
+		}
 	}
-	return false;
 }
 
-bool GenericPlayer::HandleClick(const sf::Vector2f& coordinates) const
+GenericPlayer::eMenuAction GenericPlayer::HandleClick(const sf::Vector2i& coordinates) const
 {
-	return false;
+	for (auto button : m_buttons)
+	{
+		if (button.m_area.contains(coordinates))
+			return button.m_action;
+	}
+	return eMenuAction::NOTHING;
 }
 
 bool GenericPlayer::CheckBust() const

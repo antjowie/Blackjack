@@ -6,7 +6,7 @@
 
 bool GameManager::Play()
 {
-	sf::RenderWindow window(sf::VideoMode(720, 1280), "Blackjack output window");
+	sf::RenderWindow window(sf::VideoMode(1024, 768), "Blackjack output window");
 	window.setVerticalSyncEnabled(true);
 
 	m_deck.Fill();
@@ -68,6 +68,7 @@ bool GameManager::Play()
 		}
 		qualifier->Clear();
 	}
+	
 
 	m_dealer.Clear();
 	m_deck.Clear();
@@ -109,33 +110,91 @@ bool GameManager::Play2()
 	sf::RenderWindow window(sf::VideoMode(1024,768), "Blackjack output window");
 	window.setVerticalSyncEnabled(true);
 
-	m_deck.Fill();
-	m_deck.Shuffle();
-	m_dealer.Add(m_deck.Draw());
-	m_dealer.Add(m_deck.Draw());
-	m_dealer.Add(m_deck.Draw());
-	
-	for (auto iter : m_players)
-	{
-		for(int i = 0; i < 5; ++i)
-		iter->Add(m_deck.Draw());
-	}
-
-
-	m_dealer.FlipFirstCard();
-
 	sf::Event event;
 	while (window.isOpen())
 	{
+	
+	m_deck.Fill();
+	m_deck.Shuffle();
+	
+	for (int i = 0; i < 2; ++i)
+	{
+		m_dealer.Add(m_deck.Draw());
+	}
+	m_dealer.FlipFirstCard();
+
+	window.clear(sf::Color::Black);
+	PrintHandsToWindow(window);
+	window.display();
+
 		while (window.pollEvent(event))
 		{
 			if ((event.type == event.Closed)) 
 			window.close();
 		}
-		window.clear(sf::Color::Black);
-		PrintHandsToWindow(window,1);
-		m_players.at(0)->IsHitting(window);
-		window.display();
+		
+		int playerNumber = 0;
+		for (std::vector<Player*>::const_iterator player = m_players.begin(); player != m_players.end(); ++player, ++ playerNumber)
+		{
+			window.clear(sf::Color::Black);
+			PrintHandsToWindow(window,playerNumber);
+			(*player)->PrintButtons(window);
+			window.display();
+			while ((!(*player)->CheckBust()) && ((*player)->IsHitting(window)))
+			{ 
+				window.clear(sf::Color::Black);
+				(*player)->Add(m_deck.Draw());
+				(*player)->PrintButtons(window);
+				PrintHandsToWindow(window,playerNumber);
+				window.display();
+			}
+			window.clear(sf::Color::Black);
+		}
+
+		int highestPlayer = 0;
+		for (auto getHighest : m_players)
+		{
+			if (getHighest->GetTotal() > highestPlayer && getHighest->GetTotal() <= 21)
+			{
+				highestPlayer = getHighest->GetTotal();
+			}
+		}
+
+		m_dealer.FlipFirstCard();
+		while (m_dealer.GetTotal() < highestPlayer) // m_dealer.IsHitting() is not needed
+		{
+			m_dealer.Add(m_deck.Draw());
+
+			window.clear(sf::Color::Black);
+			PrintHandsToWindow(window);
+			window.display();
+		}
+
+
+		const int DEALER_TOTAL = m_dealer.GetTotal();
+		std::cout << "...Calculating status...\n";
+		std::cout << "Dealer had a total value of " << m_dealer.GetTotal() << ".\n";
+		for (auto qualifier : m_players)
+		{
+			if ((m_dealer.CheckBust() || qualifier->GetTotal() > DEALER_TOTAL) && !qualifier->CheckBust())
+			{
+				std::cout << qualifier->GetName() << " has won. (" << qualifier->GetTotal() << ")\n";
+			}
+			else if (qualifier->GetTotal() < DEALER_TOTAL || qualifier->CheckBust())
+			{
+				std::cout << qualifier->GetName() << " has busted. (" << qualifier->GetTotal() << ")\n";
+			}
+			else
+			{
+				std::cout << qualifier->GetName() << " has pushed. (" << qualifier->GetTotal() << ")\n";
+			}
+			qualifier->Clear();
+		}
+
+		m_players[0]->IsHitting(window);
+
+		m_dealer.Clear();
+		m_deck.Clear();
 	}
 	return false;
 }
