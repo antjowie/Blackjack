@@ -4,10 +4,11 @@
 
 int main()
 {
+	TextureManager::LoadTexture("Background", "Textures/background.jpg");
 	TextureManager::LoadTexture("Playing Cards", "Textures/playingCards2.png");
 	TextureManager::LoadFont("Roboto", "Textures/Roboto.ttf");
 
-	
+
 	std::vector<std::string> namez;
 
 	for (int i = 0; i < 3; ++i)
@@ -20,9 +21,7 @@ int main()
 	GameManager gamez(namez);
 	gamez.Play2();
 
-
 	return 0;
-	
 
 	std::cout << "Welcome to the BlackJack game.\n";
 
@@ -45,6 +44,8 @@ int main()
 	}
 
 	GameManager game(names);
+	game.Play2();
+	return 0;
 	if (ShowInstructions)
 	{
 		game.Instructions();

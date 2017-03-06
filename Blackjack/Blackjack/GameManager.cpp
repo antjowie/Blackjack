@@ -1,4 +1,5 @@
 #include "GameManager.h"
+#include "Background.h"
 #include <iostream>
 #include <string>
 #include <time.h>
@@ -107,7 +108,7 @@ void GameManager::PrintPlayers()
 
 bool GameManager::Play2()
 {
-	sf::RenderWindow window(sf::VideoMode(1024,768), "Blackjack output window");
+	sf::RenderWindow window(sf::VideoMode(1024,768), "Blackjack output window", sf::Style::Close | sf::Style::None);
 	window.setVerticalSyncEnabled(true);
 
 	sf::Event event;
@@ -124,6 +125,7 @@ bool GameManager::Play2()
 	m_dealer.FlipFirstCard();
 
 	window.clear(sf::Color::Black);
+	Background::Draw(window);
 	PrintHandsToWindow(window);
 	window.display();
 
@@ -137,17 +139,47 @@ bool GameManager::Play2()
 		for (std::vector<Player*>::const_iterator player = m_players.begin(); player != m_players.end(); ++player, ++ playerNumber)
 		{
 			window.clear(sf::Color::Black);
-			PrintHandsToWindow(window,playerNumber);
+			Background::Draw(window);
 			(*player)->PrintButtons(window);
+			PrintHandsToWindow(window,playerNumber);
+
+			const std::string event = "It is " + (*player)->GetName() + "\'s turn!";
+			PrintTextEvent(window, event);
+
 			window.display();
 			while ((!(*player)->CheckBust()) && ((*player)->IsHitting(window)))
 			{ 
-				window.clear(sf::Color::Black);
 				(*player)->Add(m_deck.Draw());
+
+				window.clear(sf::Color::Black);
+				Background::Draw(window);
+				const std::string hitEvent = (*player)->GetName() + " hits";
+				PrintTextEvent(window, hitEvent);
 				(*player)->PrintButtons(window);
 				PrintHandsToWindow(window,playerNumber);
 				window.display();
 			}
+			window.clear(sf::Color::Black);
+			Background::Draw(window);
+
+			std::string statusEvent = (*player)->GetName();
+			if ((*player)->GetTotal() == 21)
+			{
+				statusEvent += " has a blackjack!";
+			}
+			else if ((*player)->GetTotal() > 21)
+			{
+				statusEvent += " bails";
+			}
+			else
+			{
+				statusEvent += " quits";
+			}
+
+			PrintTextEvent(window, statusEvent);
+			
+			PrintHandsToWindow(window);
+			window.display();
 			window.clear(sf::Color::Black);
 		}
 
@@ -166,6 +198,7 @@ bool GameManager::Play2()
 			m_dealer.Add(m_deck.Draw());
 
 			window.clear(sf::Color::Black);
+			Background::Draw(window);
 			PrintHandsToWindow(window);
 			window.display();
 		}
@@ -263,4 +296,36 @@ GameManager::~GameManager()
 	}
 	m_deck.Clear();
 	m_dealer.Clear();
+}
+
+void GameManager::PrintTextEvent(sf::RenderWindow & window, const std::string event)
+{
+	if(event != "N/A")
+	{ 
+		while (m_textEvents.size() > 5)
+		{
+			m_textEvents.pop_back();
+		}
+
+		m_textEvents.push_front(event);
+	}
+
+	sf::RectangleShape rectangle(sf::Vector2f(835, 608));
+	rectangle.setPosition(0, 500);
+	rectangle.setFillColor(sf::Color(0, 0, 0, 100));
+	window.draw(rectangle);
+	
+	sf::Text eventText(" ",TextureManager::GetFont("Roboto"));
+	eventText.setFillColor(sf::Color::White);
+
+	int textNumber = 0;
+	for (auto text : m_textEvents)
+	{
+		eventText.setPosition(sf::Vector2f(0, 510));
+		eventText.setString(text);
+		eventText.move(sf::Vector2f(0, 30.f * textNumber));
+		window.draw(eventText);
+
+		++textNumber;
+	}
 }

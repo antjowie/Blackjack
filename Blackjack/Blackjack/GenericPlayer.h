@@ -28,5 +28,4 @@ protected:
 	bool AskForHit(sf::RenderWindow& window);
 	std::string m_name;
 	std::vector<MenuItem> m_buttons;
-
 };
