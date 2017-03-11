@@ -8,22 +8,6 @@ int main()
 	TextureManager::LoadTexture("Playing Cards", "Textures/playingCards2.png");
 	TextureManager::LoadFont("Roboto", "Textures/Roboto.ttf");
 
-
-	std::vector<std::string> namez;
-
-	for (int i = 0; i < 4; ++i)
-	{
-		std::string name = "Name";
-		name += std::to_string(i);
-		namez.push_back(name);
-	}
-
-	GameManager gamez(namez);
-	gamez.Play2();
-
-	return 0;
-
-
 	std::cout << "Welcome to the Blackjack game.\n";
 
 	int numberOfPlayers;
@@ -31,6 +15,14 @@ int main()
 	{
 		std::cout << "Please enter the number of players (1-9): ";
 		std::cin >> numberOfPlayers;
+		
+		if (std::cin.fail())
+		{
+			std::cin.clear();
+			std::cin.ignore(100000,'\n');
+			continue;
+		}
+
 	} while (numberOfPlayers < 1 || numberOfPlayers > 9);
 	std::cin.ignore();
 
@@ -44,12 +36,12 @@ int main()
 		names.push_back(name);
 	}
 
+	std::cout << "The game window will now open, if the console doesn't close after the window is closed,\n"
+		<< "please close the console manually to avoid memory leaks.\n";
+
 	GameManager game(names);
 	game.Play2();
-	return 0;
 	
-	
-	while (game.Play());
 	std::cout << "\nThanks for playing!\n";
 	return 0;
 }

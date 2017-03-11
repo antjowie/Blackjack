@@ -98,7 +98,8 @@ void GameManager::Instructions(sf::RenderWindow& window)
 		"the option to hit. If you hit, you'll get a card. \n"
 		"You can do this endlessly but remember, if \n"
 		"you're over 21, you'll lose. At the end all hands will \n"
-		"be compared. That's it! \n"
+		"be compared. That's it! You can draw a card with \n"
+		"enter and stop with shift or use the buttons\n"
 		" Press enter to return...", TextureManager::GetFont("Roboto"));
 	instructions.setCharacterSize(40);
 	
@@ -262,7 +263,7 @@ bool GameManager::Play2()
 		}
 
 		m_dealer.FlipFirstCard();
-		while (m_dealer.GetTotal() < highestPlayer) // m_dealer.IsHitting() is not needed
+		while (m_dealer.GetTotal() < 16 || m_dealer.GetTotal() <= highestPlayer) // m_dealer.IsHitting() is not needed
 		{
 			m_dealer.Add(m_deck.Draw());
 
@@ -272,28 +273,14 @@ bool GameManager::Play2()
 			window.display();
 		}
 
-
-		const int DEALER_TOTAL = m_dealer.GetTotal();
-		std::cout << "...Calculating status...\n";
-		std::cout << "Dealer had a total value of " << m_dealer.GetTotal() << ".\n";
-		for (auto qualifier : m_players)
+		switch (EndMenu(window))
 		{
-			if ((m_dealer.CheckBust() || qualifier->GetTotal() > DEALER_TOTAL) && !qualifier->CheckBust())
-			{
-				std::cout << qualifier->GetName() << " has won. (" << qualifier->GetTotal() << ")\n";
-			}
-			else if (qualifier->GetTotal() < DEALER_TOTAL || qualifier->CheckBust())
-			{
-				std::cout << qualifier->GetName() << " has busted. (" << qualifier->GetTotal() << ")\n";
-			}
-			else
-			{
-				std::cout << qualifier->GetName() << " has pushed. (" << qualifier->GetTotal() << ")\n";
-			}
-			qualifier->Clear();
+		case eEndMenuAction::quit:
+			window.close();
+			break;
+		case eEndMenuAction::replay:
+			break;
 		}
-
-		m_players[0]->IsHitting(window);
 
 		m_dealer.Clear();
 		m_deck.Clear();
@@ -402,7 +389,75 @@ GameManager::eMainMenuAction GameManager::HandleMainMenuInput(const sf::Vector2i
 	return eMainMenuAction::nothing;
 }
 
-	void GameManager::PrintHandsToWindow(sf::RenderWindow & window, const int& playingHand)
+GameManager::eEndMenuAction GameManager::EndMenu(sf::RenderWindow & window)
+{
+	const int BANK_TOTAL = m_dealer.GetTotal();
+
+	sf::RectangleShape blur(sf::Vector2f(1024, 768));
+	blur.setFillColor(sf::Color(0,0,0, 225));
+	window.draw(blur);
+
+	sf::Text playerStatus("N/T", TextureManager::GetFont("Roboto"));
+	std::string bank = "The bank has a total score off ";
+	bank += std::to_string(BANK_TOTAL);
+	playerStatus.setString(bank);
+	window.draw(playerStatus);
+	int offset = 1;
+	for (auto qualifier : m_players)
+	{
+		std::string status = qualifier->GetName();
+		if (!qualifier->CheckBust() && (m_dealer.CheckBust() || qualifier->GetTotal() > BANK_TOTAL))
+		{
+			status += " has won";
+			playerStatus.setFillColor(sf::Color::Green);
+		}
+		else if (qualifier->CheckBust())
+		{
+			status += " has busted";
+			playerStatus.setFillColor(sf::Color::Red);
+		}
+		else if (qualifier->GetTotal() == BANK_TOTAL)
+		{
+			status += " has pushed";
+			playerStatus.setFillColor(sf::Color::White);
+		}
+		else 
+		{
+			status += " has lost";
+			playerStatus.setFillColor(sf::Color::White);
+		}
+		status += " with a total score off " + std::to_string(qualifier->GetTotal());
+		qualifier->Clear();
+
+		playerStatus.setString(status);
+		playerStatus.setPosition(sf::Vector2f(0, 30.f * offset));
+		++offset;
+
+		window.draw(playerStatus);
+	}
+	playerStatus.setPosition(sf::Vector2f(0, 30.f * ++offset + 10.f));
+	playerStatus.setFillColor(sf::Color::White);
+	playerStatus.setString("Press enter to play again or escape to quit");
+	
+	window.draw(playerStatus);
+	window.display();
+
+	sf::Event event;
+
+	while (true)
+	{
+		while (window.pollEvent(event))
+		{
+			if (event.type == event.KeyPressed)
+				if (event.key.code == sf::Keyboard::Escape)
+					return eEndMenuAction::quit;
+				else if (event.key.code == sf::Keyboard::Return)
+					return eEndMenuAction::replay;
+		}
+	}
+}
+
+void GameManager::PrintHandsToWindow(sf::RenderWindow & window, const int& playingHand)
 {
 	
 	float handNumber = 0;

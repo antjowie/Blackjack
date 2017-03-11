@@ -19,7 +19,7 @@ public:
 private:
 
 	enum class eMainMenuAction{ play, instructions, exit, nothing};
-	enum class eEndMenuAction{ replay, quit, nothing};
+	enum class eEndMenuAction{ replay, quit};
 	
 	struct MenuItem 
 	{
@@ -27,7 +27,7 @@ private:
 		sf::IntRect m_area;
 		sf::Text m_text;
 	};
-	
+
 	eMainMenuAction MainMenu(sf::RenderWindow& window);
 	eMainMenuAction HandleMainMenuInput(const sf::Vector2i& eventCoordinates, const std::vector<MenuItem>& menuActions);
 	eEndMenuAction EndMenu(sf::RenderWindow& window);
