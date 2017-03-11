@@ -1,5 +1,7 @@
 #include "GameManager.h"
 #include "Background.h"
+#include "GlobalVariables.h"
+
 #include <iostream>
 #include <string>
 #include <time.h>
@@ -81,8 +83,42 @@ bool GameManager::Play()
 	return ((input == 'Y') || (input == 'y'));
 }
 
-void GameManager::Instructions()
+void GameManager::Instructions(sf::RenderWindow& window)
 {
+	sf::Text instructions("Welcome to the blackjack game!\n"
+		"The basic rules of blackjack is to \n"
+		"get the highest combination of cards. \n"
+		"Each card is worth its numeric value. \n"
+		"(ace = 1/11, 2 = 2, jack = 11, queen = 12 etc.) \n"
+		"If your hands combination is higher than 21, \n"
+		"you'll bail. The objective is to beat the bank. \n"
+		"The ones with the highest hand will win. \n"
+		"The bank will win from you if your combination is equal \n"
+		"or lower than that of the bank. You'll get \n"
+		"the option to hit. If you hit, you'll get a card. \n"
+		"You can do this endlessly but remember, if \n"
+		"you're over 21, you'll lose. At the end all hands will \n"
+		"be compared. That's it! \n"
+		" Press enter to return...", TextureManager::GetFont("Roboto"));
+	instructions.setCharacterSize(40);
+	
+	window.clear(sf::Color::Black);
+	Background::Draw(window);
+	window.draw(instructions);
+	window.display();
+
+	sf::Event event;
+	bool escape = true;
+	while (escape)
+	{
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::KeyPressed)
+				if (event.key.code == sf::Keyboard::Return)
+					escape = false;
+		}
+	}
+	/*
 	std::cout << "Welcome to the blackjack game!\n"
 		<< "The basic rules of blackjack is to get the highest combination of cards. \n"
 		<< "Each card is worth its numeric value. (ace = 1/11, 2 = 2, jack = 11, queen = 12 etc. \n"
@@ -93,6 +129,7 @@ void GameManager::Instructions()
 		<< "be compared. That's it! \n"
 		<< "Press enter to continue..." << std::flush;
 	std::cin.ignore();
+	*/
 }
 
 void GameManager::PrintPlayers()
@@ -108,55 +145,87 @@ void GameManager::PrintPlayers()
 
 bool GameManager::Play2()
 {
-	sf::RenderWindow window(sf::VideoMode(1024,768), "Blackjack output window", sf::Style::Close | sf::Style::None);
+	sf::RenderWindow window(sf::VideoMode(1024,768), "Blackjack", sf::Style::Close | sf::Style::None);
 	window.setVerticalSyncEnabled(true);
 
 	sf::Event event;
+	bool FirstLoop = true;
 	while (window.isOpen())
 	{
-	
-	m_deck.Fill();
-	m_deck.Shuffle();
-	
-	for (int i = 0; i < 2; ++i)
-	{
-		m_dealer.Add(m_deck.Draw());
-	}
-	m_dealer.FlipFirstCard();
+		if (FirstLoop)
+		{
+			eMainMenuAction result;
+			while(true)
+			{
+				result = (MainMenu(window));
+				
+				if (result == GameManager::eMainMenuAction::play)
+				{
+					break;
+				}
+				if (result == GameManager::eMainMenuAction::instructions)
+				{
+					Instructions(window);
+				}
+				if (result == GameManager::eMainMenuAction::exit)
+				{
+					window.close();
+					break;
+				}
+			}
 
-	window.clear(sf::Color::Black);
-	Background::Draw(window);
-	PrintHandsToWindow(window);
-	window.display();
+			FirstLoop = false;
+		}
+
+		if (!window.isOpen())
+		{
+			return false;
+		}
+
+		m_deck.Fill();
+		m_deck.Shuffle();
+
+		for (int i = 0; i < 2; ++i)
+		{
+			m_dealer.Add(m_deck.Draw());
+		}
+		m_dealer.FlipFirstCard();
+
+		window.clear(sf::Color::Black);
+		Background::Draw(window);
+		PrintHandsToWindow(window);
+		window.display();
 
 		while (window.pollEvent(event))
 		{
-			if ((event.type == event.Closed)) 
-			window.close();
+			if ((event.type == event.Closed))
+				window.close();
 		}
-		
+
 		int playerNumber = 0;
-		for (std::vector<Player*>::const_iterator player = m_players.begin(); player != m_players.end(); ++player, ++ playerNumber)
+		for (std::vector<Player*>::const_iterator player = m_players.begin(); player != m_players.end(); ++player, ++playerNumber)
 		{
 			window.clear(sf::Color::Black);
 			Background::Draw(window);
 			(*player)->PrintButtons(window);
-			PrintHandsToWindow(window,playerNumber);
+			PrintHandsToWindow(window, playerNumber);
 
 			const std::string event = "It is " + (*player)->GetName() + "\'s turn!";
 			PrintTextEvent(window, event);
 
 			window.display();
 			while ((!(*player)->CheckBust()) && ((*player)->IsHitting(window)))
-			{ 
+			{
 				(*player)->Add(m_deck.Draw());
 
 				window.clear(sf::Color::Black);
 				Background::Draw(window);
+
 				const std::string hitEvent = (*player)->GetName() + " hits";
 				PrintTextEvent(window, hitEvent);
+
 				(*player)->PrintButtons(window);
-				PrintHandsToWindow(window,playerNumber);
+				PrintHandsToWindow(window, playerNumber);
 				window.display();
 			}
 			window.clear(sf::Color::Black);
@@ -177,7 +246,7 @@ bool GameManager::Play2()
 			}
 
 			PrintTextEvent(window, statusEvent);
-			
+
 			PrintHandsToWindow(window);
 			window.display();
 			window.clear(sf::Color::Black);
@@ -232,7 +301,108 @@ bool GameManager::Play2()
 	return false;
 }
 
-void GameManager::PrintHandsToWindow(sf::RenderWindow & window, const int& playingHand)
+GameManager::eMainMenuAction GameManager::MainMenu(sf::RenderWindow& window)
+{
+	1024, 768;
+	MenuItem play, instructions, quit;
+
+	play.m_action = eMainMenuAction::play;
+	play.m_area = sf::IntRect(500 - 60, 768 / 4 * 1 - 20, 195, 80);
+	play.m_text.setFont(TextureManager::GetFont("Roboto"));
+	play.m_text.setPosition(sf::Vector2f(505,768/4*1));
+	play.m_text.setString("Play");
+
+	instructions.m_action = eMainMenuAction::instructions;
+	instructions.m_area = sf::IntRect(500- 60, 768 / 4 * 2 - 20, 195, 80);
+	instructions.m_text.setFont(TextureManager::GetFont("Roboto"));
+	instructions.m_text.setPosition(sf::Vector2f(460,768/4*2));
+	instructions.m_text.setString("Instructions");
+
+	quit.m_action = eMainMenuAction::exit;
+	quit.m_area = sf::IntRect(500 - 60, 768 / 4 * 3 - 20, 195, 80);
+	quit.m_text.setFont(TextureManager::GetFont("Roboto"));
+	quit.m_text.setPosition(sf::Vector2f(505,768/4*3));
+	quit.m_text.setString("Quit");
+
+	std::vector<MenuItem> buttons;
+	buttons.reserve(4);
+	buttons.push_back(play);
+	buttons.push_back(instructions);
+	buttons.push_back(quit);
+
+	sf::RectangleShape rect(sf::Vector2f(195, 80));
+	rect.setFillColor(sf::Color::Color(255, 255, 255, 100));
+
+	window.clear(sf::Color::Black);
+	Background::Draw(window);
+
+	for (auto button : buttons)
+	{
+		window.draw(button.m_text);
+		rect.setPosition(static_cast<float>(button.m_area.left), static_cast<float>(button.m_area.top));
+		window.draw(rect);
+	}
+
+	window.display();
+
+	sf::Event event;
+
+	while (true) 
+	{
+		while (window.pollEvent(event))
+		{
+			switch (event.type)
+			{
+				case sf::Event::MouseButtonPressed:
+					return HandleMainMenuInput(sf::Vector2i(event.mouseButton.x, event.mouseButton.y), buttons);
+					break;
+				case sf::Event::Closed:
+					return eMainMenuAction::exit;
+					break;
+				case sf::Event::KeyPressed:
+					if (event.key.code == sf::Keyboard::Escape || event.key.code == sf::Keyboard::BackSpace)
+						return eMainMenuAction::exit;
+					break;
+			}
+		}
+	}
+	return eMainMenuAction();
+}
+
+GameManager::eMainMenuAction GameManager::HandleMainMenuInput(const sf::Vector2i& eventCoordinates, const std::vector<MenuItem>& menuActions)
+{
+	for (auto iter : menuActions)
+	{
+		if (iter.m_area.contains(eventCoordinates))
+		{
+			if (DebugMode)
+			{
+				switch (iter.m_action)
+				{
+					case GameManager::eMainMenuAction::play:
+						std::cout << "DEBUG BUTTON: Play\n";
+						break;
+					case GameManager::eMainMenuAction::instructions:
+						std::cout << "DEBUG BUTTON: Instructions\n";
+						break;
+					case GameManager::eMainMenuAction::exit:
+						std::cout << "DEBUG BUTTON: Exit\n";
+						break;
+					case GameManager::eMainMenuAction::nothing:
+						std::cout << "DEBUG BUTTON: Nothing\n";
+						break;
+					default:
+						std::cout << "DEBUG BUTTON: Default\n";
+						break;
+				}
+			}
+			return iter.m_action;
+		}
+	}
+	return eMainMenuAction::nothing;
+}
+
+	void GameManager::PrintHandsToWindow(sf::RenderWindow & window, const int& playingHand)
 {
 	
 	float handNumber = 0;
@@ -316,7 +486,6 @@ void GameManager::PrintTextEvent(sf::RenderWindow & window, const std::string ev
 	window.draw(rectangle);
 	
 	sf::Text eventText(" ",TextureManager::GetFont("Roboto"));
-	eventText.setFillColor(sf::Color::White);
 
 	int textNumber = 0;
 	for (auto text : m_textEvents)
@@ -324,6 +493,7 @@ void GameManager::PrintTextEvent(sf::RenderWindow & window, const std::string ev
 		eventText.setPosition(sf::Vector2f(0, 510));
 		eventText.setString(text);
 		eventText.move(sf::Vector2f(0, 30.f * textNumber));
+		eventText.setFillColor(sf::Color(255, 255, 255, 255 - textNumber * 30));
 		window.draw(eventText);
 
 		++textNumber;

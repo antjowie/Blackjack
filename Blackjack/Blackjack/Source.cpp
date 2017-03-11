@@ -11,7 +11,7 @@ int main()
 
 	std::vector<std::string> namez;
 
-	for (int i = 0; i < 3; ++i)
+	for (int i = 0; i < 4; ++i)
 	{
 		std::string name = "Name";
 		name += std::to_string(i);
@@ -23,7 +23,8 @@ int main()
 
 	return 0;
 
-	std::cout << "Welcome to the BlackJack game.\n";
+
+	std::cout << "Welcome to the Blackjack game.\n";
 
 	int numberOfPlayers;
 	do 
@@ -46,10 +47,7 @@ int main()
 	GameManager game(names);
 	game.Play2();
 	return 0;
-	if (ShowInstructions)
-	{
-		game.Instructions();
-	}
+	
 	
 	while (game.Play());
 	std::cout << "\nThanks for playing!\n";
