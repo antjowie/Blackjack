@@ -14,6 +14,7 @@ int main()
 
 	std::cout << "Welcome to the Blackjack game.\n";
 
+	bool writingToNameFile = false;
 	std::ifstream readNameFile("names.txt", std::ios::beg);
 	if (readNameFile.is_open())
 	{
@@ -62,8 +63,18 @@ int main()
 			if (input == 'Y')
 			{
 				remove("names.txt");
+				writingToNameFile = true;
+				readNameFile.close();
+			}
+			else
+			{
+				readNameFile.close();
 			}
 		}
+	}
+	else
+	{
+		writingToNameFile = true;
 	}
 
 	int numberOfPlayers;
@@ -76,13 +87,12 @@ int main()
 		{
 			std::cin.clear();
 			std::cin.ignore(100000,'\n');
-			continue;
 		}
 
 	} while (numberOfPlayers < 1 || numberOfPlayers > 9);
 	std::cin.ignore();
 
-	std::ofstream writeNameFile("names.txt", std::ios::beg);
+	std::ofstream writeNameFile("names.txt", std::ios::app);
 	std::string name;
 	for (int i = 1; i < numberOfPlayers + 1; ++i)
 	{
@@ -90,7 +100,7 @@ int main()
 		std::getline(std::cin, name);
 		//std::cin >> name;
 		names.push_back(name);
-		if (writeNameFile.is_open())
+		if (writeNameFile && writingToNameFile)
 		{
 			writeNameFile << name << '\n';
 		}
