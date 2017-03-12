@@ -144,7 +144,7 @@ void GameManager::PrintPlayers()
 		std::cout << "Dealer\t|" << m_dealer << '\n';
 }
 
-bool GameManager::Play2()
+void GameManager::Play2()
 {
 	sf::RenderWindow window(sf::VideoMode(1024,768), "Blackjack", sf::Style::Close | sf::Style::None);
 	window.setVerticalSyncEnabled(true);
@@ -180,7 +180,7 @@ bool GameManager::Play2()
 
 		if (!window.isOpen())
 		{
-			return false;
+			return;
 		}
 
 		m_deck.Fill();
@@ -199,7 +199,7 @@ bool GameManager::Play2()
 
 		while (window.pollEvent(event))
 		{
-			if ((event.type == event.Closed))
+			if (event.type == event.Closed)
 				window.close();
 		}
 
@@ -211,11 +211,26 @@ bool GameManager::Play2()
 			(*player)->PrintButtons(window);
 			PrintHandsToWindow(window, playerNumber);
 
-			const std::string event = "It is " + (*player)->GetName() + "\'s turn!";
-			PrintTextEvent(window, event);
+			const std::string eventText = "It is " + (*player)->GetName() + "\'s turn!";
+			PrintTextEvent(window, eventText);
 
 			window.display();
-			while ((!(*player)->CheckBust()) && ((*player)->IsHitting(window)))
+
+			bool playerInput;
+			switch ((*player)->IsHitting(window))
+			{
+			case 0:
+				playerInput = true;
+				break;
+			case 1:
+				window.close();
+				return;
+				break;
+			case 2:
+				playerInput = false;
+			}
+
+			while ((!(*player)->CheckBust()) && (playerInput))
 			{
 				(*player)->Add(m_deck.Draw());
 
@@ -228,7 +243,24 @@ bool GameManager::Play2()
 				(*player)->PrintButtons(window);
 				PrintHandsToWindow(window, playerNumber);
 				window.display();
+				
+				if (!(*player)->CheckBust())
+				{
+					switch ((*player)->IsHitting(window))
+					{
+					case 0:
+						playerInput = true;
+						break;
+					case 1:
+						window.close();
+						return;
+						break;
+					case 2:
+						playerInput = false;
+					}
+				}
 			}
+		
 			window.clear(sf::Color::Black);
 			Background::Draw(window);
 
@@ -263,7 +295,7 @@ bool GameManager::Play2()
 		}
 
 		m_dealer.FlipFirstCard();
-		while (m_dealer.GetTotal() < 16 || m_dealer.GetTotal() <= highestPlayer) // m_dealer.IsHitting() is not needed
+		while (m_dealer.GetTotal() < 16 && m_dealer.GetTotal() <= highestPlayer) // m_dealer.IsHitting() is not needed
 		{
 			m_dealer.Add(m_deck.Draw());
 
@@ -285,7 +317,7 @@ bool GameManager::Play2()
 		m_dealer.Clear();
 		m_deck.Clear();
 	}
-	return false;
+	return;
 }
 
 GameManager::eMainMenuAction GameManager::MainMenu(sf::RenderWindow& window)
@@ -349,6 +381,8 @@ GameManager::eMainMenuAction GameManager::MainMenu(sf::RenderWindow& window)
 				case sf::Event::KeyPressed:
 					if (event.key.code == sf::Keyboard::Escape || event.key.code == sf::Keyboard::BackSpace)
 						return eMainMenuAction::exit;
+					else if (event.key.code == sf::Keyboard::Return)
+						return eMainMenuAction::play;
 					break;
 			}
 		}

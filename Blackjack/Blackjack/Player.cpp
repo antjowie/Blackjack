@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 
-bool Player::IsHitting(sf::RenderWindow& window)
+int Player::IsHitting(sf::RenderWindow& window)
 {
 	/*
 	std::cout << "Does " << m_name << " want to hit? (Y/N) ";

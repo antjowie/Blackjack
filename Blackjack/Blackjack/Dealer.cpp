@@ -2,7 +2,7 @@
 
 
 
-bool Dealer::IsHitting(sf::RenderWindow& window) 
+int Dealer::IsHitting(sf::RenderWindow& window) 
 {
 	return (GetTotal() <= 16);
 }

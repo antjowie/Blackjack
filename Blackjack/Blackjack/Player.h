@@ -5,7 +5,7 @@ class Player :
 	public GenericPlayer
 {
 public:
-	virtual bool IsHitting(sf::RenderWindow& window);
+	virtual int IsHitting(sf::RenderWindow& window);
 	void PrintButtons(sf::RenderWindow& window);
 
 	std::string& GetName();

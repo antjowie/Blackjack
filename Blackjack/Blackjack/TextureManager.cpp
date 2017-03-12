@@ -26,4 +26,3 @@ const sf::Font & TextureManager::GetFont(const std::string & fontName)
 }
 std::map<std::string, sf::Texture> TextureManager::m_textures;
 std::map<std::string, sf::Font> TextureManager::m_fonts;
-

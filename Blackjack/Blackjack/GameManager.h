@@ -10,7 +10,7 @@ class GameManager
 {
 public:
 	bool Play();
-	bool Play2();
+	void Play2();
 
 
 	GameManager(const std::vector<std::string>& names);

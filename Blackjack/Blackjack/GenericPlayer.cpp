@@ -25,7 +25,7 @@ GenericPlayer::GenericPlayer(const std::string& name) :
 	m_buttons.push_back(quit);
 }
 
-bool GenericPlayer::AskForHit(sf::RenderWindow & window)
+int GenericPlayer::AskForHit(sf::RenderWindow & window)
 {
 	sf::Event event;
 
@@ -38,12 +38,11 @@ bool GenericPlayer::AskForHit(sf::RenderWindow & window)
 				break;
 			case sf::Event::KeyPressed:
 				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
-					return true;
+					return 0;
 				else if (sf::Keyboard::isKeyPressed(sf::Keyboard::RShift))
-					return false;
+					return 2;
 				break;
 			case sf::Event::Closed:
-				window.close();
 				return false;
 				break;
 			}
@@ -53,10 +52,10 @@ bool GenericPlayer::AskForHit(sf::RenderWindow & window)
 				switch (result)
 				{
 				case GenericPlayer::eMenuAction::HIT:
-					return true;
+					return 0;
 					break;
 				case GenericPlayer::eMenuAction::QUIT:
-					return false;
+					return 2;
 					break;
 				case GenericPlayer::eMenuAction::NOTHING:
 					break;

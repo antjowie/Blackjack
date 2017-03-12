@@ -6,7 +6,7 @@ class GenericPlayer :
 {
 public:
 
-	virtual bool IsHitting(sf::RenderWindow& window) = 0;
+	virtual int IsHitting(sf::RenderWindow& window) = 0;
 	bool CheckBust() const;
 	
 	GenericPlayer(const std::string& name);
@@ -25,7 +25,7 @@ private:
 	};
 
 protected:
-	bool AskForHit(sf::RenderWindow& window);
+	int AskForHit(sf::RenderWindow& window);
 	std::string m_name;
 	std::vector<MenuItem> m_buttons;
 };
