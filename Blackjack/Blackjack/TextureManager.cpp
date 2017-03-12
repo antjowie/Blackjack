@@ -1,9 +1,13 @@
 #include "TextureManager.h"
 
+#include <iostream>
+
 void TextureManager::LoadTexture(const std::string & textureName, const std::string & filename)
 {
 	sf::Texture texture;
-	texture.loadFromFile(filename);
+	if (!(texture.loadFromFile(filename)))
+		std::cout << "A file couldn't be loaded, please check if a \'Texture\' folder is located in the root of your .exe file\n"
+		<< "If not, download the file @ https://github.com/antjowie/Blackjack/tree/master/Blackjack/Blackjack or replace it\n\a";
 
 	m_textures.insert(std::make_pair(textureName, texture));
 }
@@ -11,8 +15,9 @@ void TextureManager::LoadTexture(const std::string & textureName, const std::str
 void TextureManager::LoadFont(const std::string & textureName, const std::string & filename)
 {
 	sf::Font font;
-	font.loadFromFile(filename);
-
+	if (!(font.loadFromFile(filename)))
+		std::cout << "A file couldn't be loaded, please check if a \'Texture\' folder is located in the root of your .exe file\n"
+		<< "If not, download the file @ https://github.com/antjowie/Blackjack/tree/master/Blackjack/Blackjack or replace it\n\a";
 	m_fonts.insert(std::make_pair(textureName, font));
 }
 
