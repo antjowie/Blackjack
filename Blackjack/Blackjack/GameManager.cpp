@@ -428,8 +428,13 @@ GameManager::eEndMenuAction GameManager::EndMenu(sf::RenderWindow & window)
 	const int BANK_TOTAL = m_dealer.GetTotal();
 
 	sf::RectangleShape blur(sf::Vector2f(1024, 768));
-	blur.setFillColor(sf::Color(0,0,0, 225));
+	blur.setFillColor(sf::Color(0,0,0,175));
+	
+	window.clear(sf::Color::Black);
+	Background::Draw(window);
+	PrintHandsToWindow(window);
 	window.draw(blur);
+
 
 	sf::Text playerStatus("N/T", TextureManager::GetFont("Roboto"));
 	std::string bank = "The bank has a total score off ";
@@ -448,17 +453,17 @@ GameManager::eEndMenuAction GameManager::EndMenu(sf::RenderWindow & window)
 		else if (qualifier->CheckBust())
 		{
 			status += " has busted";
-			playerStatus.setFillColor(sf::Color::Red);
+			playerStatus.setFillColor(sf::Color::Magenta);
 		}
 		else if (qualifier->GetTotal() == BANK_TOTAL)
 		{
 			status += " has pushed";
-			playerStatus.setFillColor(sf::Color::White);
+			playerStatus.setFillColor(sf::Color::Yellow);
 		}
 		else 
 		{
 			status += " has lost";
-			playerStatus.setFillColor(sf::Color::White);
+			playerStatus.setFillColor(sf::Color::Red);
 		}
 		status += " with a total score off " + std::to_string(qualifier->GetTotal());
 		qualifier->Clear();

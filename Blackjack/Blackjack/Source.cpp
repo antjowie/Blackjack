@@ -28,7 +28,7 @@ int main()
 		if (input == 'Y')
 		{
 			std::string name;
-			while (readNameFile >> name)
+			while (std::getline(readNameFile, name))
 			{
 				names.push_back(name);
 			} 
